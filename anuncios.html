@@ -1,14 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Anúncios</title>
   <style>
-    body { font-family: Arial; background: #f9f9f9; padding: 20px; }
-    .anuncio { background: white; padding: 15px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-    .anuncio img { max-width: 100px; margin: 5px; border-radius: 5px; }
-    .info { margin-top: 10px; }
-    a.zap { display: inline-block; margin-top: 10px; background: #25D366; color: white; padding: 8px 12px; border-radius: 5px; text-decoration: none; }
+    body {
+      font-family: Arial;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    .anuncio {
+      background: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .anuncio img {
+      max-width: 100%;
+      height: auto;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .zap {
+      display: inline-block;
+      margin-top: 10px;
+      background: #25d366;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -28,10 +51,8 @@
         <strong>Apelido:</strong> ${anuncio.nickname}<br>
         <strong>WhatsApp:</strong> ${anuncio.whatsapp}<br>
         <strong>Legenda:</strong> ${anuncio.legenda}<br>
-        <div class="imagens">
-          ${anuncio.imagens.map(img => `<img src="${img}" alt="Foto">`).join('')}
-        </div>
-        <a class="zap" href="${anuncio.linkZap}" target="_blank">Falar no WhatsApp</a>
+        ${anuncio.imagens.map(img => `<img src="${img}" alt="Foto">`).join('')}
+        <br><a class="zap" href="${anuncio.linkZap}" target="_blank">Falar no WhatsApp</a>
       `;
 
       lista.appendChild(div);
