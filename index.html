@@ -1,101 +1,139 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Cadastro e Publicação</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site de Anúncios</title>
   <style>
-    body { font-family: Arial; background: #f2f2f2; padding: 20px; }
-    form { background: white; padding: 20px; border-radius: 8px; max-width: 500px; margin: 20px auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    input, textarea, button { display: block; margin: 10px 0; width: 100%; padding: 10px; font-size: 16px; }
-    button { background: #25D366; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #1ebe5d; }
-    .hidden { display: none; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    header a {
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .login-area {
+      display: flex;
+      gap: 5px;
+    }
+    .login-area input {
+      padding: 5px;
+      font-size: 12px;
+      width: 80px;
+    }
+    .login-area button {
+      background: #25d366;
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      font-size: 12px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .login-area button:hover {
+      background: #1ebe5d;
+    }
+    h2 {
+      text-align: center;
+      font-size: 20px;
+    }
+    .anuncio {
+      background: white;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
+    }
+    .anuncio img {
+      max-width: 100%;
+      height: auto;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .zap {
+      display: inline-block;
+      margin-top: 5px;
+      background: #25d366;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .login-area {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .login-area input, .login-area button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <h2 style="text-align:center;">Crie sua Conta</h2>
-  <form id="cadastroForm">
-    <input type="text" id="nickname" placeholder="Seu apelido" required>
-    <input type="password" id="senha" placeholder="Crie uma senha" required>
-    <input type="password" id="confirmarSenha" placeholder="Confirme a senha" required>
-    <button type="submit">Cadastrar</button>
-  </form>
+  <header>
+    <div><a href="index.html">Criar Conta</a></div>
+    <div class="login-area">
+      <input type="text" id="loginNick" placeholder="Apelido" />
+      <input type="password" id="loginSenha" placeholder="Senha" />
+      <button onclick="fazerLogin()">Entrar</button>
+    </div>
+  </header>
 
-  <form id="publicarForm" class="hidden">
-    <h2>Publicar Fotos e WhatsApp</h2>
-    <input type="file" id="fotos" accept="image/*" multiple required>
-    <textarea id="legenda" placeholder="Escreva uma legenda para suas fotos" required></textarea>
-    <input type="text" id="whatsapp" placeholder="Seu número do WhatsApp" required>
-    <button type="submit">Publicar</button>
-  </form>
+  <h2>Todos os Anúncios</h2>
+  <div id="listaAnuncios"></div>
 
   <script>
-    const cadastroForm = document.getElementById('cadastroForm');
-    const publicarForm = document.getElementById('publicarForm');
-    let nicknameAtual = "";
+    const lista = document.getElementById('listaAnuncios');
+    const anuncios = JSON.parse(localStorage.getItem('anuncios') || '[]');
 
-    cadastroForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const nickname = document.getElementById('nickname').value;
-      const senha = document.getElementById('senha').value;
-      const confirmarSenha = document.getElementById('confirmarSenha').value;
+    anuncios.forEach(anuncio => {
+      const div = document.createElement('div');
+      div.className = 'anuncio';
 
-      if (senha !== confirmarSenha) {
-        alert("As senhas não coincidem!");
-        return;
-      }
+      div.innerHTML = `
+        <strong>Apelido:</strong> ${anuncio.nickname}<br>
+        <strong>WhatsApp:</strong> ${anuncio.whatsapp}<br>
+        <strong>Legenda:</strong> ${anuncio.legenda}<br>
+        ${anuncio.imagens.map(img => `<img src="${img}" alt="Foto">`).join('')}
+        <br><a class="zap" href="${anuncio.linkZap}" target="_blank">Falar no WhatsApp</a>
+      `;
 
-      localStorage.setItem('usuario_' + nickname, JSON.stringify({ nickname, senha }));
-      nicknameAtual = nickname;
-      alert("Conta criada com sucesso!");
-
-      cadastroForm.classList.add('hidden');
-      publicarForm.classList.remove('hidden');
+      lista.appendChild(div);
     });
 
-    publicarForm.addEventListener('submit', function(e) {
-      e.preventDefault();
+    function fazerLogin() {
+      const nick = document.getElementById('loginNick').value;
+      const senha = document.getElementById('loginSenha').value;
+      const usuario = JSON.parse(localStorage.getItem('usuario_' + nick));
 
-      const fotos = document.getElementById('fotos').files;
-      const legenda = document.getElementById('legenda').value;
-      const whatsapp = document.getElementById('whatsapp').value;
-
-      if (fotos.length > 4) {
-        alert("Você só pode enviar até 4 fotos.");
-        return;
+      if (usuario && usuario.senha === senha) {
+        alert("Login realizado com sucesso!");
+        window.location.href = "index.html";
+      } else {
+        alert("Apelido ou senha incorretos.");
       }
-
-      const imagens = [];
-      let carregadas = 0;
-
-      for (let i = 0; i < fotos.length; i++) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          imagens.push(event.target.result);
-          carregadas++;
-          if (carregadas === fotos.length) {
-            const linkZap = `https://wa.me/55${whatsapp.replace(/\D/g, '')}`;
-
-            const anuncio = {
-              nickname: nicknameAtual,
-              whatsapp,
-              linkZap,
-              legenda,
-              imagens
-            };
-
-            const anuncios = JSON.parse(localStorage.getItem('anuncios') || '[]');
-            anuncios.push(anuncio);
-            localStorage.setItem('anuncios', JSON.stringify(anuncios));
-
-            alert("Publicação enviada com sucesso! Redirecionando para pagamento...");
-            window.location.href = "pagamento.html";
-          }
-        };
-        reader.readAsDataURL(fotos[i]);
-      }
-    });
+    }
   </script>
 
 </body>
