@@ -12,6 +12,11 @@
       margin: 0;
       padding: 20px;
     }
+    #bloqueioDesktop {
+      display: none;
+      text-align: center;
+      padding: 50px;
+    }
     header {
       display: flex;
       justify-content: space-between;
@@ -77,22 +82,22 @@
       text-decoration: none;
       font-size: 13px;
     }
-    @media (max-width: 600px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
+    @media (min-width: 769px) {
+      body > *:not(#bloqueioDesktop) {
+        display: none !important;
       }
-      .login-area {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .login-area input, .login-area button {
-        width: 100%;
+      #bloqueioDesktop {
+        display: block !important;
       }
     }
   </style>
 </head>
 <body>
+
+  <div id="bloqueioDesktop">
+    <h2>🚫 Este site é exclusivo para dispositivos móveis</h2>
+    <p>Por favor, acesse pelo seu celular ou tablet.</p>
+  </div>
 
   <header>
     <div><a href="index.html">Criar Conta</a></div>
