@@ -5,58 +5,115 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Anúncios</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: #f9f9f9;
+      margin: 0;
       padding: 20px;
+    }
+    #bloqueioDesktop {
+      display: none;
+      text-align: center;
+      padding: 50px;
+    }
+    h2 {
+      text-align: center;
+      font-size: 20px;
     }
     .anuncio {
       background: white;
-      padding: 15px;
-      margin-bottom: 20px;
+      padding: 10px;
+      margin-bottom: 15px;
       border-radius: 8px;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      font-size: 14px;
     }
-    .anuncio img {
-      max-width: 100%;
+    .carrossel {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .carrossel img {
+      max-width: 200px;
       height: auto;
-      margin: 5px 0;
       border-radius: 5px;
     }
     .zap {
       display: inline-block;
-      margin-top: 10px;
+      margin-top: 5px;
       background: #25d366;
       color: white;
-      padding: 10px 15px;
+      padding: 6px 10px;
       border-radius: 5px;
       text-decoration: none;
+      font-size: 13px;
+    }
+    @media (min-width: 769px) {
+      body > *:not(#bloqueioDesktop) {
+        display: none !important;
+      }
+      #bloqueioDesktop {
+        display: block !important;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h2 style="text-align:center;">Todos os Anúncios</h2>
+  <div id="bloqueioDesktop">
+    <h2>🚫 Este site é exclusivo para dispositivos móveis</h2>
+    <p>Por favor, acesse pelo seu celular ou tablet.</p>
+  </div>
+
+  <h2>Todos os Anúncios</h2>
   <div id="listaAnuncios"></div>
 
   <script>
     const lista = document.getElementById('listaAnuncios');
-    const anuncios = JSON.parse(localStorage.getItem('anuncios') || '[]');
+    const anunciosOriginais = JSON.parse(localStorage.getItem('anuncios') || '[]');
 
-    anuncios.forEach(anuncio => {
-      const div = document.createElement('div');
-      div.className = 'anuncio';
+    function embaralhar(array) {
+      return array
+        .map(item => ({ item, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ item }) => item);
+    }
 
-      div.innerHTML = `
-        <strong>Apelido:</strong> ${anuncio.nickname}<br>
-        <strong>WhatsApp:</strong> ${anuncio.whatsapp}<br>
-        <strong>Legenda:</strong> ${anuncio.legenda}<br>
-        ${anuncio.imagens.map(img => `<img src="${img}" alt="Foto">`).join('')}
-        <br><a class="zap" href="${anuncio.linkZap}" target="_blank">Falar no WhatsApp</a>
-      `;
+    function exibirAnuncios(anuncios) {
+      lista.innerHTML = '';
+      anuncios.forEach((anuncio, index) => {
+        const div = document.createElement('div');
+        div.className = 'anuncio';
 
-      lista.appendChild(div);
-    });
+        div.innerHTML = `
+          <strong>Apelido:</strong> ${anuncio.nickname}<br>
+          <strong>WhatsApp:</strong> ${anuncio.whatsapp}<br>
+          <strong>Legenda:</strong> ${anuncio.legenda}<br>
+          <div class="carrossel" id="carrossel-${index}">
+            <img src="${anuncio.imagens[0]}" alt="Foto">
+          </div>
+          <br><a class="zap" href="${anuncio.linkZap}" target="_blank">Falar no WhatsApp</a>
+        `;
+
+        lista.appendChild(div);
+
+        // Carrossel automático de imagens
+        let imgIndex = 0;
+        const imgContainer = document.getElementById(`carrossel-${index}`);
+        setInterval(() => {
+          imgIndex = (imgIndex + 1) % anuncio.imagens.length;
+          imgContainer.innerHTML = `<img src="${anuncio.imagens[imgIndex]}" alt="Foto">`;
+        }, 2000);
+      });
+    }
+
+    // Exibe inicialmente
+    exibirAnuncios(embaralhar(anunciosOriginais));
+
+    // Atualiza a ordem dos anúncios a cada 1 hora
+    setInterval(() => {
+      exibirAnuncios(embaralhar(anunciosOriginais));
+    }, 3600000); // 1 hora em milissegundos
   </script>
 
 </body>
