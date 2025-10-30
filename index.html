@@ -111,9 +111,27 @@
   <h2>Todos os Anúncios</h2>
   <div id="listaAnuncios"></div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    // 🔧 Substitua pelos dados do seu projeto Firebase
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_PROJETO.firebaseapp.com",
+      databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+      projectId: "SEU_PROJETO",
+      storageBucket: "SEU_PROJETO.appspot.com",
+      messagingSenderId: "SEU_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+
   <script>
     const lista = document.getElementById('listaAnuncios');
-    const anunciosOriginais = JSON.parse(localStorage.getItem('anuncios') || '[]');
 
     function embaralhar(array) {
       return array
@@ -149,11 +167,17 @@
       });
     }
 
-    exibirAnuncios(embaralhar(anunciosOriginais));
+    function carregarAnuncios() {
+      db.ref('anuncios').on('value', snapshot => {
+        const dados = snapshot.val();
+        if (!dados) return;
+        const listaAnuncios = Object.values(dados);
+        exibirAnuncios(embaralhar(listaAnuncios));
+      });
+    }
 
-    setInterval(() => {
-      exibirAnuncios(embaralhar(anunciosOriginais));
-    }, 3600000); // 1 hora
+    carregarAnuncios();
+    setInterval(carregarAnuncios, 3600000); // Atualiza a cada 1 hora
 
     function fazerLogin() {
       const nick = document.getElementById('loginNick').value;
