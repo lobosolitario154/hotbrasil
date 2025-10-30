@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pagamento</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       background: #f9f9f9;
+      margin: 0;
       padding: 20px;
+    }
+    #bloqueioDesktop {
+      display: none;
+      text-align: center;
+      padding: 50px;
     }
     .container {
       background: white;
@@ -17,6 +24,7 @@
       max-width: 400px;
       margin: auto;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
     }
     button {
       background: #007bff;
@@ -31,9 +39,22 @@
     button:hover {
       background: #0056b3;
     }
+    @media (min-width: 769px) {
+      body > *:not(#bloqueioDesktop) {
+        display: none !important;
+      }
+      #bloqueioDesktop {
+        display: block !important;
+      }
+    }
   </style>
 </head>
 <body>
+
+  <div id="bloqueioDesktop">
+    <h2>🚫 Este site é exclusivo para dispositivos móveis</h2>
+    <p>Por favor, acesse pelo seu celular ou tablet.</p>
+  </div>
 
   <div class="container">
     <h2>Pagamento do Anúncio</h2>
@@ -44,7 +65,7 @@
   <script>
     function finalizarPagamento() {
       alert("Pagamento confirmado! Seu anúncio será publicado.");
-      window.location.href = "anuncios.html";
+      window.location.href = "index.html";
     }
   </script>
 
