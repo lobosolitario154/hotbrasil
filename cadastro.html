@@ -81,6 +81,25 @@
     <button type="submit">Publicar</button>
   </form>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    // 🔧 Substitua pelos dados do seu projeto Firebase
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_PROJETO.firebaseapp.com",
+      databaseURL: "https://SEU_PROJETO-default-rtdb.firebaseio.com",
+      projectId: "SEU_PROJETO",
+      storageBucket: "SEU_PROJETO.appspot.com",
+      messagingSenderId: "SEU_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+
   <script>
     const cadastroForm = document.getElementById('cadastroForm');
     const publicarForm = document.getElementById('publicarForm');
@@ -128,9 +147,7 @@
           if (carregadas === fotos.length) {
             const linkZap = `https://wa.me/55${whatsapp.replace(/\D/g, '')}`;
             const anuncio = { nickname: nicknameAtual, whatsapp, linkZap, legenda, imagens };
-            const anuncios = JSON.parse(localStorage.getItem('anuncios') || '[]');
-            anuncios.push(anuncio);
-            localStorage.setItem('anuncios', JSON.stringify(anuncios));
+            db.ref('anuncios').push(anuncio);
             alert("Publicação enviada com sucesso!");
             window.location.href = "index.html";
           }
