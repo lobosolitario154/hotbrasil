@@ -58,10 +58,13 @@
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
       font-size: 14px;
     }
-    .anuncio img {
-      max-width: 100%;
+    .carrossel {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .carrossel img {
+      max-width: 200px;
       height: auto;
-      margin: 5px 0;
       border-radius: 5px;
     }
     .zap {
@@ -105,22 +108,50 @@
 
   <script>
     const lista = document.getElementById('listaAnuncios');
-    const anuncios = JSON.parse(localStorage.getItem('anuncios') || '[]');
+    const anunciosOriginais = JSON.parse(localStorage.getItem('anuncios') || '[]');
 
-    anuncios.forEach(anuncio => {
-      const div = document.createElement('div');
-      div.className = 'anuncio';
+    function embaralhar(array) {
+      return array
+        .map(item => ({ item, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ item }) => item);
+    }
 
-      div.innerHTML = `
-        <strong>Apelido:</strong> ${anuncio.nickname}<br>
-        <strong>WhatsApp:</strong> ${anuncio.whatsapp}<br>
-        <strong>Legenda:</strong> ${anuncio.legenda}<br>
-        ${anuncio.imagens.map(img => `<img src="${img}" alt="Foto">`).join('')}
-        <br><a class="zap" href="${anuncio.linkZap}" target="_blank">Falar no WhatsApp</a>
-      `;
+    function exibirAnuncios(anuncios) {
+      lista.innerHTML = '';
+      anuncios.forEach((anuncio, index) => {
+        const div = document.createElement('div');
+        div.className = 'anuncio';
 
-      lista.appendChild(div);
-    });
+        div.innerHTML = `
+          <strong>Apelido:</strong> ${anuncio.nickname}<br>
+          <strong>WhatsApp:</strong> ${anuncio.whatsapp}<br>
+          <strong>Legenda:</strong> ${anuncio.legenda}<br>
+          <div class="carrossel" id="carrossel-${index}">
+            <img src="${anuncio.imagens[0]}" alt="Foto">
+          </div>
+          <br><a class="zap" href="${anuncio.linkZap}" target="_blank">Falar no WhatsApp</a>
+        `;
+
+        lista.appendChild(div);
+
+        // Carrossel automático de imagens
+        let imgIndex = 0;
+        const imgContainer = document.getElementById(`carrossel-${index}`);
+        setInterval(() => {
+          imgIndex = (imgIndex + 1) % anuncio.imagens.length;
+          imgContainer.innerHTML = `<img src="${anuncio.imagens[imgIndex]}" alt="Foto">`;
+        }, 2000);
+      });
+    }
+
+    // Exibe inicialmente
+    exibirAnuncios(embaralhar(anunciosOriginais));
+
+    // Atualiza a ordem dos anúncios a cada 1 hora
+    setInterval(() => {
+      exibirAnuncios(embaralhar(anunciosOriginais));
+    }, 3600000); // 1 hora em milissegundos
 
     function fazerLogin() {
       const nick = document.getElementById('loginNick').value;
