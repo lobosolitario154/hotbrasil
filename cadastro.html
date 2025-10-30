@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro e Publicação</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 20px;
+    }
+    #bloqueioDesktop {
+      display: none;
+      text-align: center;
+      padding: 50px;
+    }
+    h2 {
+      text-align: center;
+      font-size: 20px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 20px auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      background: #25d366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1ebe5d;
+    }
+    .hidden {
+      display: none;
+    }
+    @media (min-width: 769px) {
+      body > *:not(#bloqueioDesktop) {
+        display: none !important;
+      }
+      #bloqueioDesktop {
+        display: block !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="bloqueioDesktop">
+    <h2>🚫 Este site é exclusivo para dispositivos móveis</h2>
+    <p>Por favor, acesse pelo seu celular ou tablet.</p>
+  </div>
+
+  <h2>Crie sua Conta</h2>
+  <form id="cadastroForm">
+    <input type="text" id="nickname" placeholder="Seu apelido" required />
+    <input type="password" id="senha" placeholder="Crie uma senha" required />
+    <input type="password" id="confirmarSenha" placeholder="Confirme a senha" required />
+    <button type="submit">Cadastrar</button>
+  </form>
+
+  <form id="publicarForm" class="hidden">
+    <h2>Publicar Fotos e WhatsApp</h2>
+    <input type="file" id="fotos" accept="image/*" multiple required />
+    <textarea id="legenda" placeholder="Escreva uma legenda para suas fotos" required></textarea>
+    <input type="text" id="whatsapp" placeholder="Seu número do WhatsApp" required />
+    <button type="submit">Publicar</button>
+  </form>
+
+  <script>
+    const cadastroForm = document.getElementById('cadastroForm');
+    const publicarForm = document.getElementById('publicarForm');
+    let nicknameAtual = "";
+
+    cadastroForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nickname = document.getElementById('nickname').value;
+      const senha = document.getElementById('senha').value;
+      const confirmarSenha = document.getElementById('confirmarSenha').value;
+
+      if (senha !== confirmarSenha) {
+        alert("As senhas não coincidem!");
+        return;
+      }
+
+      localStorage.setItem('usuario_' + nickname, JSON.stringify({ nickname, senha }));
+      nicknameAtual = nickname;
+      alert("Conta criada com sucesso!");
+
+      cadastroForm.classList.add('hidden');
+      publicarForm.classList.remove('hidden');
+    });
+
+    publicarForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const fotos = document.getElementById('fotos').files;
+      const legenda = document.getElementById('legenda').value;
+      const whatsapp = document.getElementById('whatsapp').value;
+
+      if (fotos.length > 4) {
+        alert("Você só pode enviar até 4 fotos.");
+        return;
+      }
+
+      const imagens = [];
+      let carregadas = 0;
+
+      for (let i = 0; i < fotos.length; i++) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          imagens.push(event.target.result);
+          carregadas++;
+          if (carregadas === fotos.length) {
+            const linkZap = `https://wa.me/55${whatsapp.replace(/\D/g, '')}`;
+            const anuncio = { nickname: nicknameAtual, whatsapp, linkZap, legenda, imagens };
+            const anuncios = JSON.parse(localStorage.getItem('anuncios') || '[]');
+            anuncios.push(anuncio);
+            localStorage.setItem('anuncios', JSON.stringify(anuncios));
+            alert("Publicação enviada com sucesso!");
+            window.location.href = "index.html";
+          }
+        };
+        reader.readAsDataURL(fotos[i]);
+      }
+    });
+  </script>
+
+</body>
+</html>
