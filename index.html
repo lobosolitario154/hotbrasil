@@ -100,7 +100,7 @@
   </div>
 
   <header>
-    <div><a href="index.html">Criar Conta</a></div>
+    <div><a href="cadastro.html">Criar Conta</a></div>
     <div class="login-area">
       <input type="text" id="loginNick" placeholder="Apelido" />
       <input type="password" id="loginSenha" placeholder="Senha" />
@@ -140,7 +140,6 @@
 
         lista.appendChild(div);
 
-        // Carrossel automático de imagens
         let imgIndex = 0;
         const imgContainer = document.getElementById(`carrossel-${index}`);
         setInterval(() => {
@@ -150,13 +149,11 @@
       });
     }
 
-    // Exibe inicialmente
     exibirAnuncios(embaralhar(anunciosOriginais));
 
-    // Atualiza a ordem dos anúncios a cada 1 hora
     setInterval(() => {
       exibirAnuncios(embaralhar(anunciosOriginais));
-    }, 3600000); // 1 hora em milissegundos
+    }, 3600000); // 1 hora
 
     function fazerLogin() {
       const nick = document.getElementById('loginNick').value;
@@ -165,7 +162,7 @@
 
       if (usuario && usuario.senha === senha) {
         alert("Login realizado com sucesso!");
-        window.location.href = "index.html";
+        window.location.href = "cadastro.html";
       } else {
         alert("Apelido ou senha incorretos.");
       }
